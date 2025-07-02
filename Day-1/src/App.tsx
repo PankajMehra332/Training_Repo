@@ -10,11 +10,7 @@ interface TodoItem {
 }
 
 function App() {
-  const [todosList, setTodosList] = useState<TodoItem[]>([
-    { id: 1, name: "do this" },
-    { id: 2, name: "do that" },
-    { id: 3, name: "do those" },
-  ]);
+  const [todosList, setTodosList] = useState<TodoItem[]>([]);
   const [todoItem, setTodoItem] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -22,6 +18,15 @@ function App() {
   const handleAddTodo = () => {
     const newItem = { id: Math.floor(Math.random() * 100000), name: todoItem };
     setTodosList([...todosList, newItem]);
+    fetch("/api/add-todo", {
+      method:"POST",
+      headers:{
+       "Content-Type":"application/json"
+      },
+      body: JSON.stringify(newItem)
+    }).then((res)=>res.json()).then((data)=>{
+      console.log(data, 'data');
+    })
     setTodoItem("");
   };
 
@@ -36,9 +41,15 @@ function App() {
     todo.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(()=>{
+    fetch("/api/get-todos").then((res)=>res.json()).then((data)=>{
+      setTodosList(data);
+    })
+  },[]);
+
   return (
     <div className="main-container">
-      <div>
+      <div className="child-container">
         <SearchInput setSearchInput={setSearchInput} />
         <AddTodo
           todoItem={todoItem}

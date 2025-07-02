@@ -9,11 +9,15 @@ interface TodosItemList {
 }
 
 const TodosList: React.FC<TodosItemList> = ({ todosList, setTodosList }) => {
-  const handleClick = (id: number) => {
+  const handleClick = async(id: number) => {
     const newList: TodoItem[] = todosList.filter(
       (item: TodoItem) => item?.id !== id
     );
     setTodosList(newList);
+    const res=await fetch(`/api/delete-todo/${id}`, {
+      method: "DELETE",
+    });
+    const data = res.json();
   };
 
   return (
